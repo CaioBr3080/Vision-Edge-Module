@@ -1,0 +1,13 @@
+{
+  "id": "vision-edge-attenuation",
+  "title": "Vision Edge Attenuation",
+  "description": "Adds independent radial edge attenuation to native token vision, token lighting, and ambient light configuration.",
+  "version": "0.2.1",
+  "authors": [{"name": "Vision Edge Attenuation contributors"}],
+  "compatibility": {"minimum": "13", "verified": "14.360", "maximum": "14"},
+  "esmodules": ["scripts/main.js"],
+  "languages": [
+    {"lang": "en", "name": "English", "path": "lang/en.json"},
+    {"lang": "pt-BR", "name": "Português do Brasil", "path": "lang/pt-BR.json"}
+  ]
+}
