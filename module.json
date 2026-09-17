@@ -5,9 +5,12 @@
   "version": "0.2.1",
   "authors": [{"name": "Vision Edge Attenuation contributors"}],
   "compatibility": {"minimum": "13", "verified": "14.360", "maximum": "14"},
+  "url": "https://github.com/CaioBr3080/Vision-Edge-Module",
+  "manifest": "https://raw.githubusercontent.com/CaioBr3080/Vision-Edge-Module/main/module.json",
+  "download": "https://github.com/CaioBr3080/Vision-Edge-Module/releases/latest/download/vision-edge-attenuation.zip", 
   "esmodules": ["scripts/main.js"],
   "languages": [
     {"lang": "en", "name": "English", "path": "lang/en.json"},
-    {"lang": "pt-BR", "name": "Português do Brasil", "path": "lang/pt-BR.json"}
+    {"lang": "pt-BR", "name": "PortuguÃªs do Brasil", "path": "lang/pt-BR.json"}
   ]
 }
