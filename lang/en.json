@@ -1,0 +1,8 @@
+{
+  "VEA.EdgeAttenuation": "Edge Attenuation",
+  "VEA.EdgeAttenuationHint": "Controls how gradually vision fades into darkness at its maximum range.",
+  "VEA.LightEdgeAttenuationHint": "Controls how gradually this light fades at its maximum range, independently of its native attenuation.",
+  "VEA.LightUnsupported": "Vision Edge Attenuation: an incompatible light shader was detected. That source keeps its native lighting; see the console.",
+  "VEA.Unsupported": "Vision Edge Attenuation: the visual effect is unavailable with this canvas pipeline. Token settings are preserved; see the console and README.",
+  "VEA.PersistentVision": "Vision Edge Attenuation: persistent vision does not distinguish current sight from exploration. The visual effect is disabled for this scene."
+}

@@ -1,0 +1,8 @@
+{
+  "VEA.EdgeAttenuation": "Atenuação da Borda",
+  "VEA.EdgeAttenuationHint": "Controla quão gradualmente a visão desaparece na escuridão ao atingir seu alcance máximo.",
+  "VEA.LightEdgeAttenuationHint": "Controla quão gradualmente esta luz desaparece ao atingir seu alcance máximo, independentemente da atenuação nativa.",
+  "VEA.LightUnsupported": "Vision Edge Attenuation: um shader de luz incompatível foi detectado. Essa fonte mantém a iluminação nativa; consulte o console.",
+  "VEA.Unsupported": "Vision Edge Attenuation: o efeito visual não está disponível neste pipeline do canvas. As configurações dos tokens foram preservadas; consulte o console e o README.",
+  "VEA.PersistentVision": "Vision Edge Attenuation: a visão persistente não distingue a visão atual da exploração. O efeito visual está desativado nesta cena."
+}

@@ -1,0 +1,7 @@
+{
+  "name": "vision-edge-attenuation",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test", "pack": "node tools/pack.mjs"}
+}
