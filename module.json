@@ -1,13 +1,13 @@
 {
   "id": "vision-edge-attenuation",
   "title": "Vision Edge Attenuation",
-  "description": "Adds independent radial edge attenuation to native token vision, token lighting, and ambient light configuration.",
-  "version": "0.2.1",
+  "description": "Adds configurable edge attenuation to native token vision, token lights, ambient lights, and Fog of War.",
+  "version": "0.3.0",
   "authors": [{"name": "Vision Edge Attenuation contributors"}],
   "compatibility": {"minimum": "13", "verified": "14.360", "maximum": "14"},
   "url": "https://github.com/CaioBr3080/Vision-Edge-Module",
   "manifest": "https://raw.githubusercontent.com/CaioBr3080/Vision-Edge-Module/main/module.json",
-  "download": "https://github.com/CaioBr3080/Vision-Edge-Module/releases/download/v0.2.1/vision-edge-attenuation.zip",
+  "download": "https://github.com/CaioBr3080/Vision-Edge-Module/releases/download/v0.3.0/vision-edge-attenuation.zip",
   "esmodules": ["scripts/main.js"],
   "languages": [
     {"lang": "en", "name": "English", "path": "lang/en.json"},

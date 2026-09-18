@@ -1,21 +1,26 @@
-import {mkdir, readFile, readdir, writeFile} from "node:fs/promises";
+import {mkdir, readFile, readdir, rm, writeFile} from "node:fs/promises";
 import {resolve} from "node:path";
 import {spawnSync} from "node:child_process";
 
 // Use built-in Windows zip support, with portable '/' entry names; never distribute Foundry assets.
-if (process.platform !== "win32") throw new Error("Use zip -r on module.json scripts lang README.md docs on this platform.");
+if (process.platform !== "win32") throw new Error("Use zip -r on module.json scripts lang README.md on this platform.");
 const manifest = JSON.parse(await readFile("module.json", "utf8"));
 await mkdir("dist", {recursive: true});
 const staging = resolve("dist", manifest.id);
+// Always start clean so removed files cannot leak into a later release archive.
+await rm(staging, {recursive: true, force: true});
 await mkdir(staging, {recursive: true});
+
 async function copyFile(path) {
   await writeFile(resolve(staging, path), await readFile(path));
 }
+
 for (const path of ["module.json", "README.md"]) await copyFile(path);
-for (const directory of ["scripts", "lang", "docs"]) {
+for (const directory of ["scripts", "lang"]) {
   await mkdir(resolve(staging, directory), {recursive: true});
   for (const name of await readdir(directory)) await copyFile(`${directory}/${name}`);
 }
+
 const destination = resolve("dist", `${manifest.id}-${manifest.version}.zip`);
 const quote = value => `'${value.replaceAll("'", "''")}'`;
 const archiveScript = `

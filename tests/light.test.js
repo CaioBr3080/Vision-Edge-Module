@@ -115,10 +115,15 @@ test("native light forms use the same flag for ambient and prototype token light
     ? {disabled: false, closest: () => anchor} : null};
   globalThis.game = {i18n: {localize: key => key}};
   globalThis.foundry = {data: {fields: {NumberField: class {
-    toFormGroup(groupConfig, inputConfig) {return {dataset: {}, groupConfig, inputConfig};}
+    toFormGroup(groupConfig, inputConfig) {return {dataset: {}, groupConfig, inputConfig, after: next => inserted.push(next)};}
+  }, BooleanField: class {
+    toFormGroup(groupConfig, inputConfig) {return {dataset: {}, groupConfig, inputConfig, querySelector: () => ({checked: !!inputConfig.value, addEventListener: () => {}})};}
   }}}};
   await addLightEdgeControl({id: "ambient", document: {getFlag: () => 0.5}}, root);
   await addLightEdgeControl({id: "prototype", token: Promise.resolve({getFlag: () => 0.8})}, root);
-  assert.deepEqual(inserted.map(group => group.inputConfig.value), [0.5, 0.8]);
-  assert.ok(inserted.every(group => group.inputConfig.name === LIGHT_FLAG_PATH && group.inputConfig.type === "range"));
+  const ranges = inserted.filter(group => group.inputConfig.type === "range");
+  const overrides = inserted.filter(group => group.inputConfig.type !== "range");
+  assert.deepEqual(ranges.map(group => group.inputConfig.value), [0.5, 0.8]);
+  assert.ok(ranges.every(group => group.inputConfig.name === LIGHT_FLAG_PATH));
+  assert.ok(overrides.every(group => group.inputConfig.name.endsWith("lightEdgeAttenuationOverride")));
 });

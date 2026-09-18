@@ -1,21 +1,28 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {FLAG_PATH, LIGHT_FLAG_PATH} from "../scripts/common.js";
+import {FLAG_PATH, LIGHT_FLAG_PATH, MODULE_ID, SETTINGS} from "../scripts/common.js";
 
-test("V14 initializes rendering and remote flag updates refresh current-scene vision", async () => {
+test("V14 initializes settings, rendering, and remote flag refreshes", async () => {
   const callbacks = new Map();
+  const registered = [];
   globalThis.Hooks = {
     once: (name, callback) => callbacks.set(name, [callback]),
     on: (name, callback) => callbacks.set(name, [...(callbacks.get(name) ?? []), callback])
   };
-  globalThis.game = {release: {generation: 14}};
+  globalThis.game = {release: {generation: 14}, settings: {
+    register: (...args) => registered.push(args), registerMenu: (...args) => registered.push(args), get: () => 0
+  }};
+  globalThis.foundry = {applications: {api: {ApplicationV2: class {}}}};
   class NativeFilter {apply() {}}
   globalThis.CONFIG = {Canvas: {visibilityFilter: NativeFilter}};
   await import("../scripts/main.js");
   callbacks.get("init")[0]();
+  assert.ok(registered.some(([module, key]) => module === MODULE_ID && key === SETTINGS.VISION_DEFAULT));
+  assert.ok(registered.some(([module, key]) => module === MODULE_ID && key === "configuration"));
   assert.ok(callbacks.has("renderTokenConfig"));
   assert.ok(callbacks.has("renderPrototypeTokenConfig"));
   assert.ok(callbacks.has("renderAmbientLightConfig"));
+  assert.ok(callbacks.has("renderTokenHUD"));
   assert.ok(callbacks.has("lightingRefresh"));
   assert.equal(callbacks.get("canvasReady").length, 2);
   assert.ok(callbacks.has("visibilityRefresh"));

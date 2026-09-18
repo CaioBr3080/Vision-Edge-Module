@@ -1,4 +1,4 @@
-import {LIGHT_FLAG, getAttenuation, debug} from "./common.js";
+import {LIGHT_FLAG, getAttenuation, getFogAttenuation, debug} from "./common.js";
 
 export const VERTEX_SHADER = `
 precision highp float;
@@ -21,7 +21,7 @@ void main() {
   float alpha = 1.0;
   if (edgeAttenuation > 0.0 && radius > 0.0) {
     float distanceToOrigin = distance(vCanvasPosition, origin) / radius;
-    // Only the last 5–50% of the finite range fades; the center stays unchanged.
+    // Only the last 5-50% of the finite range fades; the center stays unchanged.
     float width = 0.5 * edgeAttenuation;
     alpha = 1.0 - smoothstep(1.0 - width, 1.0, distanceToOrigin);
   }
@@ -60,6 +60,7 @@ export class VisionFeather {
     this.active = false;
     this.failed = false;
     this.warnings = new Set();
+    this.measuringTokenIds = new Set();
   }
 
   warn(key, detail) {
@@ -81,14 +82,42 @@ export class VisionFeather {
     // Only this filter's sampler is swapped; fog commits and all logical masks remain native.
     CONFIG.Canvas.visibilityFilter = class EdgeVisibilityFilter extends Base {
       apply(...args) {
-        const original = this.uniforms.visionTexture;
-        if (controller.active && controller.texture) {
-          this.uniforms.visionTexture = controller.texture;
-        }
+        const originalTexture = this.uniforms.visionTexture;
+        const originalBlur = this.blur;
+        if (controller.active && controller.texture) this.uniforms.visionTexture = controller.texture;
+        // The native VisibilityFilter blurs its input before it composites
+        // current sight with exploration. Extending only that visual blur softens
+        // the newly explored Fog edge without changing fog data or visibility tests.
+        const fogBlur = controller.getFogBlur();
+        if (fogBlur > 0 && Number.isFinite(originalBlur)) this.blur = originalBlur + fogBlur;
         try { return super.apply(...args); }
-        finally { this.uniforms.visionTexture = original; }
+        finally {
+          this.uniforms.visionTexture = originalTexture;
+          if (Number.isFinite(originalBlur)) this.blur = originalBlur;
+        }
       }
     };
+  }
+
+  setMeasurement(tokenId, active) {
+    if (!tokenId) return;
+    const changed = active ? !this.measuringTokenIds.has(tokenId) : this.measuringTokenIds.has(tokenId);
+    if (!changed) return;
+    if (active) this.measuringTokenIds.add(tokenId);
+    else this.measuringTokenIds.delete(tokenId);
+    canvas?.perception?.update?.({refreshVision: true});
+  }
+
+  getFogBlur() {
+    const attenuation = getFogAttenuation();
+    if (!attenuation || !canvas?.blur?.enabled) return 0;
+    const gridSize = Number(canvas.dimensions?.size) || 100;
+    return Math.min(64, Math.max(2, gridSize * 0.35)) * attenuation;
+  }
+
+  sourceAttenuation(source) {
+    const tokenId = source.object?.document?.id ?? source.object?.id;
+    return this.measuringTokenIds.has(tokenId) ? 0 : getAttenuation(source.object?.document);
   }
 
   refresh(visibility = canvas.visibility) {
@@ -101,7 +130,7 @@ export class VisionFeather {
         && !source.data?.negative && source.radius > 0);
     const featherLights = lights.some(source => getAttenuation(source.object?.document, LIGHT_FLAG) > 0);
     const enabled = sources.some(source => !source.isBlinded && source.radius > 0
-      && getAttenuation(source.object?.document) > 0) || featherLights;
+      && this.sourceAttenuation(source) > 0) || featherLights;
     if (!enabled) { this.release(); return; }
     if (canvas.visibilityOptions?.persistentVision) {
       this.release();
@@ -156,7 +185,7 @@ export class VisionFeather {
         let entry = this.meshes.get(source);
         if (entry?.shape !== source.shape) {
           entry?.mesh.destroy();
-          const mesh = createSightMesh(source, getAttenuation(source.object?.document), this.program);
+          const mesh = createSightMesh(source, this.sourceAttenuation(source), this.program);
           if (!mesh) { this.meshes.delete(source); continue; }
           this.sight.addChild(mesh);
           entry = {shape: source.shape, mesh};
@@ -166,7 +195,7 @@ export class VisionFeather {
         uniforms.origin[0] = source.x;
         uniforms.origin[1] = source.y;
         uniforms.radius = source.radius;
-        uniforms.edgeAttenuation = source.isBlinded ? 0 : getAttenuation(source.object?.document);
+        uniforms.edgeAttenuation = source.isBlinded ? 0 : this.sourceAttenuation(source);
         debug("Vision source updated", source.sourceId, "Edge attenuation:", uniforms.edgeAttenuation);
       }
       for (const [source, entry] of this.meshes) {
@@ -236,6 +265,7 @@ export class VisionFeather {
 
   release() {
     this.active = false;
+    this.measuringTokenIds.clear();
     if (this.texture && this.mask && !this.mask.destroyed) this.mask.removeRenderTexture(this.texture);
     this.sight?.destroy({children: true});
     this.light?.destroy({children: true});

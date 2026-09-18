@@ -1,76 +1,48 @@
 # Vision Edge Attenuation
 
-Vision Edge Attenuation is a system-agnostic module for **Foundry VTT v13 and v14**. It adds an independent **Edge Attenuation** control after Foundry's native attenuation controls for token vision, token light, Prototype Token light, and ambient lights.
+Vision Edge Attenuation is a system-agnostic module for **Foundry VTT v13 and v14**. It adds soft radial edges to native token vision and lighting while preserving walls, cone clipping, visibility rules, and Fog exploration.
 
 ## Installation
 
-Install from this manifest URL in Foundry's **Add-on Modules → Install Module** window:
+Install the module in Foundry with this package manifest URL:
 
 ```text
-https://raw.githubusercontent.com/CaioBr3080/Vision-Edge-Module/main/module.json
+https://github.com/CaioBr3080/Vision-Edge-Module/releases/download/v0.3.0/module.json
 ```
 
-Alternatively, download `vision-edge-attenuation.zip` from the latest GitHub release and extract it so the result is:
+Enable **Vision Edge Attenuation** in the target world after installation.
 
-```text
-Data/modules/vision-edge-attenuation/module.json
-```
+## World configuration
 
-Restart Foundry and enable **Vision Edge Attenuation** in the world.
+Open **Game Settings -> Configure Settings -> Vision Edge Attenuation -> Configure**.
 
-## Token vision
+The window provides these world-scoped settings:
 
-Open a Token or Prototype Token configuration, select **Vision**, and set **Edge Attenuation** from `0` to `1` in `0.05` steps.
+- Default edge attenuation for token vision.
+- Default edge attenuation for token and ambient lights.
+- Fog of War edge attenuation. This only softens the visible boundary between explored and unexplored areas; it does not change exploration data, sight range, or detection.
+- An option to show players a hold-to-measure button in an owned token's HUD.
 
-`0` keeps Foundry's normal hard edge. Higher values soften only the final radial portion of the finite vision range:
+Every eligible token vision source and light uses its world default. A token or ambient light can instead use its own value by enabling **Use a custom vision value** or **Use a custom light value** next to the corresponding Edge Attenuation control. Existing values from v0.2.x remain custom values after upgrading.
 
-- `0.25`: last 12.5%
-- `0.5`: last 25%
-- `1`: last 50%
+## Token controls
 
-Walls, doors, and cone sides remain hard. The module uses Foundry's existing wall-clipped polygon and never expands the range. Fog exploration, detection rules, and logical visibility retain their native range.
+Open a Token or Prototype Token configuration:
 
-The setting is stored at:
+- **Vision** contains Edge Attenuation and the priority checkbox for its vision.
+- **Light** contains Edge Attenuation and the priority checkbox for its light.
 
-```text
-flags.vision-edge-attenuation.edgeAttenuation
-```
+For an ambient light, the light control and priority checkbox appear in its configuration. Values range from `0` to `1` in `0.05` steps. `0` retains Foundry's hard native edge. At `1`, the final half of the finite range fades.
 
-## Token and ambient light
+## Quick measurement
 
-For a Token or Prototype Token, open **Light**. For an ambient light, open **Advanced**. The separate **Edge Attenuation** control is stored at:
-
-```text
-flags.vision-edge-attenuation.lightEdgeAttenuation
-```
-
-This affects the light's rendered contribution and the visual reveal mask, including cached ambient lights. It preserves Foundry's range, wall and cone clipping, coloration, native attenuation, animation, global illumination, darkness sources, and overlapping lights. Each light keeps its own setting; token vision and token light do not share a value.
-
-Set the value to `0` to restore the original shader and native appearance.
-
-## Macro example
-
-Use the light flag in a Token update to set a torch and its edge attenuation together:
-
-```js
-const token = canvas.tokens.controlled[0];
-if (!token) return ui.notifications.warn("Select a token first.");
-
-await token.document.update({
-  "light.bright": 2,
-  "light.dim": 4,
-  "light.color": "#ffcc66",
-  "light.alpha": 0.6,
-  "light.animation.type": "torch",
-  "flags.vision-edge-attenuation.lightEdgeAttenuation": 0.7
-});
-```
+When the GM enables the player option, players with permission to update an owned token see a ruler button in its Token HUD. Hold the button to render that token's vision as if its Edge Attenuation were `0`; release it to restore the normal visual edge. This is local and temporary: it never changes a token document, other players' views, Fog data, or sight calculations.
 
 ## Compatibility
 
-The module supports Foundry VTT v13 and v14 and was checked against v14.360. It uses native form fields, source polygons, visibility masks, and point-light shader instances. Custom shaders that do not follow Foundry's adaptive light shader structure are left unchanged and show a compatibility warning.
+The module supports Foundry VTT v13 and v14 and was checked against v14.360. It uses native source polygons, visibility masks, point-light shader instances, and the native Fog filter. Custom shaders that do not follow Foundry's adaptive light shader structure are left unchanged and show a compatibility warning.
 
-`persistentVision` does not expose the current-vision sampler needed for the separate visual texture, so vision edge attenuation is disabled in that mode without changing Foundry's native behavior.
+Vision edge attenuation is unavailable with `persistentVision`, because Foundry does not expose its current-vision sampler in that mode. Fog edge attenuation remains a visual-only filter adjustment where the Foundry blur pipeline is enabled.
 
 ## Development
 
@@ -79,7 +51,3 @@ node --test
 node tools/pack.mjs
 node tools/serve-tests.mjs 'C:\Program Files\Foundry Virtual Tabletop\resources\app'
 ```
-
-The test server exposes visual checks at `http://127.0.0.1:32113/tests/webgl.html` and `http://127.0.0.1:32113/tests/light-webgl.html`. The tests use the local Foundry installation for PIXI, cached-container, and native shaders; those Foundry assets are not distributed with this module.
-
-See [the validation guide](docs/TESTING.md) for test details.
