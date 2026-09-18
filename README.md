@@ -7,7 +7,7 @@ Vision Edge Attenuation is a system-agnostic module for **Foundry VTT v13 and v1
 Install the module in Foundry with this package manifest URL:
 
 ```text
-https://github.com/CaioBr3080/Vision-Edge-Module/releases/download/v0.3.1/module.json
+https://github.com/CaioBr3080/Vision-Edge-Module/releases/download/v0.3.2/module.json
 ```
 
 Enable **Vision Edge Attenuation** in the target world after installation.
@@ -43,6 +43,11 @@ Values stored by v0.2.x are treated as custom values after upgrading, preserving
 - **Token / Prototype Token -> Vision:** vision Edge Attenuation and **Use a custom vision value**.
 - **Token / Prototype Token -> Light:** light Edge Attenuation and **Use a custom light value**.
 - **Ambient Light configuration:** light Edge Attenuation and **Use a custom light value**.
+- **Region -> Adjust Darkness Level behavior:** Region edge attenuation.
+
+## Darkness regions
+
+An **Adjust Darkness Level** behavior has its own **Region edge attenuation** slider from `0` to `1`. It softens the visual transition at the actual outline of that region, including irregular shapes and holes. The control changes neither the selected darkness mode/value nor the region geometry. It is saved on that behavior, so different darkness regions can use different values.
 
 The global defaults immediately refresh the scene after they are saved. A source with a custom value refreshes when its own configuration is saved.
 

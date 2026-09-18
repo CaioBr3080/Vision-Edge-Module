@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {FLAG_PATH, LIGHT_FLAG_PATH, MODULE_ID, SETTINGS} from "../scripts/common.js";
+import {REGION_FLAG_PATH} from "../scripts/region-edge.js";
 
 test("V14 initializes settings, rendering, and remote flag refreshes", async () => {
   const callbacks = new Map();
@@ -23,7 +24,9 @@ test("V14 initializes settings, rendering, and remote flag refreshes", async () 
   assert.ok(callbacks.has("renderPrototypeTokenConfig"));
   assert.ok(callbacks.has("renderAmbientLightConfig"));
   assert.ok(callbacks.has("lightingRefresh"));
-  assert.equal(callbacks.get("canvasReady").length, 2);
+  assert.equal(callbacks.get("canvasReady").length, 3);
+  assert.ok(callbacks.has("renderRegionBehaviorConfig"));
+  assert.ok(callbacks.has("updateRegionBehavior"));
   assert.ok(callbacks.has("visibilityRefresh"));
   assert.notEqual(CONFIG.Canvas.visibilityFilter, NativeFilter);
   const requests = [];
@@ -44,4 +47,6 @@ test("V14 initializes settings, rendering, and remote flag refreshes", async () 
   assert.equal(requests.length, 3);
   updateAmbient({parent: {id: "current"}}, {[LIGHT_FLAG_PATH]: 0.6});
   assert.deepEqual(requests[3], {refreshLighting: true, refreshVision: true});
+  const updateRegion = callbacks.get("updateRegionBehavior")[0];
+  updateRegion({type: "adjustDarknessLevel"}, {[REGION_FLAG_PATH]: 0.6});
 });

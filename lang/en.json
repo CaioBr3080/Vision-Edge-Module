@@ -2,6 +2,8 @@
   "VEA.EdgeAttenuation": "Edge Attenuation",
   "VEA.EdgeAttenuationHint": "Controls how gradually vision fades into darkness at its maximum range.",
   "VEA.LightEdgeAttenuationHint": "Controls how gradually this light fades at its maximum range, independently of its native attenuation.",
+  "VEA.RegionEdgeAttenuation": "Region edge attenuation",
+  "VEA.RegionEdgeAttenuationHint": "Controls how gradually this Adjust Darkness Level region blends at its boundary. It does not change the configured darkness level or region shape.",
   "VEA.VisionOverride": "Use a custom vision value",
   "VEA.VisionOverrideHint": "When enabled, this token's vision attenuation overrides the world default.",
   "VEA.LightOverride": "Use a custom light value",

@@ -3,9 +3,11 @@ import {registerSettings} from "./settings.js";
 import {registerTokenConfig} from "./token-config.js";
 import {VisionFeather} from "./vision-feather.js";
 import {LightFeather} from "./light-feather.js";
+import {RegionEdgeAttenuation} from "./region-edge.js";
 
 const feather = new VisionFeather();
 const lightFeather = new LightFeather();
+const regionEdgeAttenuation = new RegionEdgeAttenuation();
 
 Hooks.once("init", () => {
   registerSettings();
@@ -16,6 +18,7 @@ Hooks.once("init", () => {
   }
   feather.install();
   lightFeather.install();
+  regionEdgeAttenuation.install();
   Hooks.on("visibilityRefresh", visibility => feather.refresh(visibility));
   Hooks.on("canvasReady", () => feather.refresh());
   Hooks.on("canvasTearDown", () => feather.release());

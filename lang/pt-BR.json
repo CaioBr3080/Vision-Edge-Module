@@ -2,6 +2,8 @@
   "VEA.EdgeAttenuation": "Atenua\u00e7\u00e3o da borda",
   "VEA.EdgeAttenuationHint": "Controla qu\u00e3o gradualmente a vis\u00e3o desaparece na escurid\u00e3o ao atingir seu alcance m\u00e1ximo.",
   "VEA.LightEdgeAttenuationHint": "Controla qu\u00e3o gradualmente esta luz desaparece ao atingir seu alcance m\u00e1ximo, independentemente da atenua\u00e7\u00e3o nativa.",
+  "VEA.RegionEdgeAttenuation": "Atenua\u00e7\u00e3o da borda da regi\u00e3o",
+  "VEA.RegionEdgeAttenuationHint": "Controla qu\u00e3o gradualmente esta regi\u00e3o de Ajustar N\u00edvel de Escurid\u00e3o se mistura na borda. N\u00e3o altera o n\u00edvel de escurid\u00e3o nem o formato configurado.",
   "VEA.VisionOverride": "Usar valor personalizado de vis\u00e3o",
   "VEA.VisionOverrideHint": "Quando ativado, o valor de atenua\u00e7\u00e3o deste token substitui o padr\u00e3o do mundo.",
   "VEA.LightOverride": "Usar valor personalizado de luz",
