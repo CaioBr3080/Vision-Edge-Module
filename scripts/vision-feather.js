@@ -60,7 +60,6 @@ export class VisionFeather {
     this.active = false;
     this.failed = false;
     this.warnings = new Set();
-    this.measuringTokenIds = new Set();
   }
 
   warn(key, detail) {
@@ -99,15 +98,6 @@ export class VisionFeather {
     };
   }
 
-  setMeasurement(tokenId, active) {
-    if (!tokenId) return;
-    const changed = active ? !this.measuringTokenIds.has(tokenId) : this.measuringTokenIds.has(tokenId);
-    if (!changed) return;
-    if (active) this.measuringTokenIds.add(tokenId);
-    else this.measuringTokenIds.delete(tokenId);
-    canvas?.perception?.update?.({refreshVision: true});
-  }
-
   getFogBlur() {
     const attenuation = getFogAttenuation();
     if (!attenuation || !canvas?.blur?.enabled) return 0;
@@ -115,10 +105,6 @@ export class VisionFeather {
     return Math.min(64, Math.max(2, gridSize * 0.35)) * attenuation;
   }
 
-  sourceAttenuation(source) {
-    const tokenId = source.object?.document?.id ?? source.object?.id;
-    return this.measuringTokenIds.has(tokenId) ? 0 : getAttenuation(source.object?.document);
-  }
 
   refresh(visibility = canvas.visibility) {
     if (this.failed) return;
@@ -130,7 +116,7 @@ export class VisionFeather {
         && !source.data?.negative && source.radius > 0);
     const featherLights = lights.some(source => getAttenuation(source.object?.document, LIGHT_FLAG) > 0);
     const enabled = sources.some(source => !source.isBlinded && source.radius > 0
-      && this.sourceAttenuation(source) > 0) || featherLights;
+      && getAttenuation(source.object?.document) > 0) || featherLights;
     if (!enabled) { this.release(); return; }
     if (canvas.visibilityOptions?.persistentVision) {
       this.release();
@@ -185,7 +171,7 @@ export class VisionFeather {
         let entry = this.meshes.get(source);
         if (entry?.shape !== source.shape) {
           entry?.mesh.destroy();
-          const mesh = createSightMesh(source, this.sourceAttenuation(source), this.program);
+          const mesh = createSightMesh(source, getAttenuation(source.object?.document), this.program);
           if (!mesh) { this.meshes.delete(source); continue; }
           this.sight.addChild(mesh);
           entry = {shape: source.shape, mesh};
@@ -195,7 +181,7 @@ export class VisionFeather {
         uniforms.origin[0] = source.x;
         uniforms.origin[1] = source.y;
         uniforms.radius = source.radius;
-        uniforms.edgeAttenuation = source.isBlinded ? 0 : this.sourceAttenuation(source);
+        uniforms.edgeAttenuation = source.isBlinded ? 0 : getAttenuation(source.object?.document);
         debug("Vision source updated", source.sourceId, "Edge attenuation:", uniforms.edgeAttenuation);
       }
       for (const [source, entry] of this.meshes) {
@@ -265,7 +251,6 @@ export class VisionFeather {
 
   release() {
     this.active = false;
-    this.measuringTokenIds.clear();
     if (this.texture && this.mask && !this.mask.destroyed) this.mask.removeRenderTexture(this.texture);
     this.sight?.destroy({children: true});
     this.light?.destroy({children: true});

@@ -22,7 +22,6 @@ test("V14 initializes settings, rendering, and remote flag refreshes", async () 
   assert.ok(callbacks.has("renderTokenConfig"));
   assert.ok(callbacks.has("renderPrototypeTokenConfig"));
   assert.ok(callbacks.has("renderAmbientLightConfig"));
-  assert.ok(callbacks.has("renderTokenHUD"));
   assert.ok(callbacks.has("lightingRefresh"));
   assert.equal(callbacks.get("canvasReady").length, 2);
   assert.ok(callbacks.has("visibilityRefresh"));

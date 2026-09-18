@@ -94,22 +94,6 @@ test("native filter return, arguments and samplers survive normal application an
   assert.equal(filter.uniforms.visionTexture, originalTexture);
 });
 
-test("Fog blur and temporary measurement only change local visual state", () => {
-  configureSettings({[SETTINGS.FOG_ATTENUATION]: 0.5, [SETTINGS.VISION_DEFAULT]: 0.7});
-  const requests = [];
-  globalThis.canvas = {blur: {enabled: true}, dimensions: {size: 100},
-    perception: {update: request => requests.push(request)}};
-  const controller = new VisionFeather();
-  assert.equal(controller.getFogBlur(), 17.5);
-  const source = {object: {document: {id: "token-1", getFlag: () => undefined}}};
-  assert.equal(controller.sourceAttenuation(source), 0.7);
-  controller.setMeasurement("token-1", true);
-  assert.equal(controller.sourceAttenuation(source), 0);
-  controller.setMeasurement("token-1", false);
-  assert.equal(controller.sourceAttenuation(source), 0.7);
-  assert.deepEqual(requests, [{refreshVision: true}, {refreshVision: true}]);
-});
-
 test("zero does not allocate a visual texture", () => {
   configureSettings();
   globalThis.canvas = {effects: {visionSources: [{hasActiveLayer: true, radius: 100,

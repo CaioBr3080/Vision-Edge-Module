@@ -42,14 +42,6 @@ export class VisionEdgeSettings extends foundry.applications.api.ApplicationV2 {
         <legend>${localize("VEA.Settings.FogLegend")}</legend>
         ${range(SETTINGS.FOG_ATTENUATION, setting(SETTINGS.FOG_ATTENUATION), "VEA.Settings.FogAttenuation", "VEA.Settings.FogAttenuationHint")}
       </fieldset>
-      <fieldset>
-        <legend>${localize("VEA.Settings.MeasurementLegend")}</legend>
-        <div class="form-group">
-          <label for="vea-${SETTINGS.PLAYER_MEASUREMENT}">${localize("VEA.Settings.PlayerMeasurement")}</label>
-          <input id="vea-${SETTINGS.PLAYER_MEASUREMENT}" name="${SETTINGS.PLAYER_MEASUREMENT}" type="checkbox" ${setting(SETTINGS.PLAYER_MEASUREMENT) ? "checked" : ""}>
-          <p class="hint">${localize("VEA.Settings.PlayerMeasurementHint")}</p>
-        </div>
-      </fieldset>
       <footer class="form-footer">
         <button type="submit"><i class="fa-solid fa-floppy-disk"></i> ${localize("SETTINGS.Save")}</button>
       </footer>
@@ -74,8 +66,7 @@ export class VisionEdgeSettings extends foundry.applications.api.ApplicationV2 {
       await Promise.all([
         game.settings.set(MODULE_ID, SETTINGS.VISION_DEFAULT, clampAttenuation(data.get(SETTINGS.VISION_DEFAULT))),
         game.settings.set(MODULE_ID, SETTINGS.LIGHT_DEFAULT, clampAttenuation(data.get(SETTINGS.LIGHT_DEFAULT))),
-        game.settings.set(MODULE_ID, SETTINGS.FOG_ATTENUATION, clampAttenuation(data.get(SETTINGS.FOG_ATTENUATION))),
-        game.settings.set(MODULE_ID, SETTINGS.PLAYER_MEASUREMENT, data.has(SETTINGS.PLAYER_MEASUREMENT))
+        game.settings.set(MODULE_ID, SETTINGS.FOG_ATTENUATION, clampAttenuation(data.get(SETTINGS.FOG_ATTENUATION)))
       ]);
       refreshPerception();
       ui.notifications.info(localize("VEA.Settings.Saved"));
@@ -96,10 +87,6 @@ export function registerSettings() {
       onChange: () => refreshPerception()
     });
   }
-  game.settings.register(MODULE_ID, SETTINGS.PLAYER_MEASUREMENT, {
-    name: "VEA.Settings.PlayerMeasurement", hint: "VEA.Settings.PlayerMeasurementHint",
-    scope: "world", config: false, restricted: true, type: Boolean, default: false
-  });
   game.settings.registerMenu(MODULE_ID, "configuration", {
     name: "VEA.Settings.MenuName", label: "VEA.Settings.MenuLabel", hint: "VEA.Settings.MenuHint",
     icon: "fa-solid fa-circle-half-stroke", type: VisionEdgeSettings, restricted: true

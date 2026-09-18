@@ -1,7 +1,6 @@
 import {MODULE_ID, LIGHT_FLAG, flagChanged} from "./common.js";
 import {registerSettings} from "./settings.js";
 import {registerTokenConfig} from "./token-config.js";
-import {registerTokenHud} from "./token-hud.js";
 import {VisionFeather} from "./vision-feather.js";
 import {LightFeather} from "./light-feather.js";
 
@@ -11,7 +10,6 @@ const lightFeather = new LightFeather();
 Hooks.once("init", () => {
   registerSettings();
   registerTokenConfig();
-  registerTokenHud(feather);
   if (![13, 14].includes(game.release.generation)) {
     console.warn(`[${MODULE_ID}] Supported: Foundry VTT 13-14. Visual rendering is disabled on other generations.`);
     return;
@@ -20,7 +18,7 @@ Hooks.once("init", () => {
   lightFeather.install();
   Hooks.on("visibilityRefresh", visibility => feather.refresh(visibility));
   Hooks.on("canvasReady", () => feather.refresh());
-  Hooks.on("canvasTearDown", () => feather.release({clearMeasurement: true}));
+  Hooks.on("canvasTearDown", () => feather.release());
   Hooks.on("updateToken", (document, changes) => {
     if (!canvas.ready || document.parent?.id !== canvas.scene?.id) return;
     // Flag changes alone do not trigger the core Token sight render flags.

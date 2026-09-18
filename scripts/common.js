@@ -8,8 +8,7 @@ export const DEBUG = false;
 export const SETTINGS = Object.freeze({
   VISION_DEFAULT: "visionDefault",
   LIGHT_DEFAULT: "lightDefault",
-  FOG_ATTENUATION: "fogAttenuation",
-  PLAYER_MEASUREMENT: "enablePlayerMeasurement"
+  FOG_ATTENUATION: "fogAttenuation"
 });
 
 const SETTINGS_BY_FLAG = Object.freeze({
@@ -75,13 +74,6 @@ export function getFogAttenuation() {
   }
 }
 
-export function playerMeasurementEnabled() {
-  try {
-    return game?.settings?.get?.(MODULE_ID, SETTINGS.PLAYER_MEASUREMENT) === true;
-  } catch (_error) {
-    return false;
-  }
-}
 
 /** Resolve either a document-specific override or the world default. */
 export function getAttenuation(document, flag = FLAG) {
