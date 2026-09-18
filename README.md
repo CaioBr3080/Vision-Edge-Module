@@ -82,4 +82,4 @@ node tools/serve-tests.mjs 'C:\Program Files\Foundry Virtual Tabletop\resources\
 
 The test server exposes visual checks at `http://127.0.0.1:32113/tests/webgl.html` and `http://127.0.0.1:32113/tests/light-webgl.html`. The tests use the local Foundry installation for PIXI, cached-container, and native shaders; those Foundry assets are not distributed with this module.
 
-See [pipeline notes](docs/PIPELINE.md) and [the validation guide](docs/TESTING.md) for implementation and test details.
+See [the validation guide](docs/TESTING.md) for test details.
